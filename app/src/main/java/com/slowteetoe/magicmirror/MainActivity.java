@@ -1,6 +1,7 @@
 package com.slowteetoe.magicmirror;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,15 +10,37 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String url = "https://mobiletodo.herokuapp.com/webview";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WebView myWebView = (WebView) findViewById(R.id.webView);
-        myWebView.loadUrl("https://mobiletodo.herokuapp.com/webview");
+        final WebView myWebView = (WebView) findViewById(R.id.webView);
+        myWebView.setWebViewClient(new CustomWebViewClient());
+        myWebView.loadUrl(url);
+        new CountDownTimer(365 * 24 * 60 * 60, 60000) {
+
+            public void onTick(long millisUntilFinished) {
+                ((WebView) findViewById(R.id.webView)).loadUrl(url);
+            }
+
+            public void onFinish() {
+                //Done
+            }
+        }.start();
+    }
+
+    private class CustomWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
     }
 
     @Override
